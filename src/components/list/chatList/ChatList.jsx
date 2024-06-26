@@ -12,26 +12,19 @@ const ChatList = () => {
   const { currentUser } = useUserStore();
   const { chatId, changeChat } = useChatStore();
   const [input, setInput] = useState("");
-  console.log(chatId, "");
 
   useEffect(() => {
     const unSub = onSnapshot(
       doc(db, "userChats", currentUser.id),
       async (res) => {
         const items = res.data().chats;
-
         const promises = items.map(async (item) => {
           const userDocRef = doc(db, "users", item.receiverId);
           const userDocSnap = await getDoc(userDocRef);
-
           const user = userDocSnap.data();
-
           return { ...item, user };
         });
-
         const chatData = await Promise.all(promises);
-        console.log(chatData, "here");
-
         setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
       }
     );
@@ -42,7 +35,7 @@ const ChatList = () => {
   }, [currentUser.id]);
 
   const handleSelect = async (chat) => {
-    // Get the user chats
+    // Get only the user chats by removing the user
     const userChats = chats.map((item) => {
       const { user, ...rest } = item;
       return rest;

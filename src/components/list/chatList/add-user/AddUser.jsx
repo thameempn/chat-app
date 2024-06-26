@@ -3,44 +3,53 @@ import {
   collection,
   doc,
   getDocs,
-  query,
   serverTimestamp,
   setDoc,
   updateDoc,
-  where,
 } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useUserStore } from "../../../../lib/userStore";
 import "./addUser.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const AddUser = () => {
-  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const { currentUser } = useUserStore();
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-   
-    const formData = new FormData(e.target);
-    const username = formData.get("username");
-    try {
-      const userRef = collection(db, "users");
-    
-      const q = query(userRef, where("username", "==", username));
-     
-      const querySnapShot = await getDocs(q);
-      console.log(querySnapShot,"err");
-      if (!querySnapShot.empty) {
-        setUser(querySnapShot.docs[0].data());
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // Fetch all users from Firestore
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersRef = collection(db, "users");
+        const usersSnapshot = await getDocs(usersRef);
+        const usersData = usersSnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((user) => user.id !== currentUser.id);
 
-  const handleAdd = async () => {
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Error fetching users: ", error);
+      }
+    };
+
+    fetchUsers();
+  }, [currentUser]);
+
+  // Filter users based on search term
+  const filteredUsers = users.filter((user) =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAdd = async (user) => {
+    if (!user) return;
+
     const chatRef = collection(db, "chats");
     const userChatsRef = collection(db, "userChats");
+
     try {
       const newChatRef = doc(chatRef);
 
@@ -67,24 +76,32 @@ const AddUser = () => {
         }),
       });
     } catch (err) {
-      console.log(err);
+      console.error("Error adding user to chat: ", err);
     }
   };
+
   return (
     <div className="addUser">
-      <form onSubmit={handleSearch}>
-        <input type="text" placeholder="Username" name="username" />
-        <button>Search</button>
-      </form>
-      {user && (
-        <div className="user">
-          <div className="detail">
-            <img src={user.avatar || "./avatar.png"} alt="" />
-            <span>{user.username}</span>
+      <input
+        type="text"
+        placeholder="Search by username"
+        name="username"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      {/* List of filtered users */}
+      <div className="user-list">
+        {filteredUsers.map((user) => (
+          <div className="user" key={user.id}>
+            <div className="detail">
+              <img src={user.avatar || "./avatar.png"} alt="" />
+              <span>{user.username}</span>
+            </div>
+            <button onClick={() => handleAdd(user)}>Add user</button>
           </div>
-          <button onClick={handleAdd}>Add user</button>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };

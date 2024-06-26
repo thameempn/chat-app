@@ -9,6 +9,13 @@
     align-items: center;
     gap: 20px;
 
+    h2 {
+      width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     img {
       height: 50px;
       width: 50px;
