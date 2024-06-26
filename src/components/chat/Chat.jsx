@@ -95,7 +95,9 @@ const Chat = () => {
             (c) => c.chatId === chatId
           );
 
-          userChatsData.chats[chatIndex].lastMessage = text ? text.trim() : "Image";
+          userChatsData.chats[chatIndex].lastMessage = text
+            ? text.trim()
+            : "Image";
           userChatsData.chats[chatIndex].isSeen =
             id === currentUser.id ? true : false;
           userChatsData.chats[chatIndex].updatedAt = Date.now();
@@ -154,8 +156,10 @@ const Chat = () => {
                 key={message?.createdAt.seconds}
               >
                 <div className="texts">
-                  {message.img && <img src={message.img} alt="" />}
-                  <p>{message.text}</p>
+                  <p>
+                    {message.img && <img src={message.img} alt="" />}
+                    {message.text}
+                  </p>
                   <span>{formatTimestamp(message.createdAt)}</span>
                 </div>
               </div>

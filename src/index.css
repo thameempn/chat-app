@@ -25,9 +25,26 @@ body {
   display: flex;
 }
 
-.loading{
-  padding: 50px;
-  font-size: 36px;
-  border-radius: 10px;
-  background-color: rgba(17, 25, 40, 0.9);
+/* Define the spinner container */
+.spinner {
+  width: 64px;
+  height: 64px;
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  border-top: 8px solid #1d49ba;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Define the spin animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

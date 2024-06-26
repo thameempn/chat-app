@@ -161,7 +161,7 @@
 
     .inputContainer .imagePreview {
       position: absolute;
-      top: -120px; /* Adjust as needed */
+      top: -120px;
       right: 0;
       background: white;
       padding: 10px;
