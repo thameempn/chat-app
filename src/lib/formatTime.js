@@ -4,7 +4,7 @@ export const formatTimestamp = (timestamp) => {
   );
   const now = new Date();
   const diffInSeconds = Math.floor((now - date) / 1000);
-
+console.log("TEST");
   if (diffInSeconds < 60) {
     return "just now";
   } else if (diffInSeconds < 3600) {
